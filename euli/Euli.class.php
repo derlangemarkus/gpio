@@ -7,21 +7,33 @@ class Euli
 	const EYES_OPEN = 30;
 	const EYES_CLOSE = 14;
 	
+	protected static $instance;
 	private $eyesStatus;
 	private $eyesPin;
 	private $lcd;
 	
-	public function __construct($eyesPin, $pinRs, $pinE, $pinD4, $pinD5, $pinD6, $pinD7, $lcdWith = 16)
+	
+	public static function getInstance($eyesPin, $pinRs, $pinE, $pinD4, $pinD5, $pinD6, $pinD7, $lcdWith = 16)
+	{
+		if(!self::$instance)
+		{
+			self::$instance = new Euli($eyesPin, $pinRs, $pinE, $pinD4, $pinD5, $pinD6, $pinD7, $lcdWith);
+
+		}
+		return self::$instance;
+	}
+	
+	private function __construct($eyesPin, $pinRs, $pinE, $pinD4, $pinD5, $pinD6, $pinD7, $lcdWith = 16)
 	{
 		$this->eyesPin = $eyesPin;
 		Gpio::setupPwm($eyesPin);
 		
 		$this->lcd = new Lcd($pinRs, $pinE, $pinD4, $pinD5, $pinD6, $pinD7, $lcdWith);
+		$this->lcd->init();
 	}
 	
 	public function init()
 	{
-		$this->lcd->init();
 		$this->closeEyes(true);
 	}
 	
@@ -35,7 +47,12 @@ class Euli
 		$this->moveEyes(self::EYES_CLOSE, $forceMovement);
 	}
 	
-	public function outputText($text, $line)
+	public function clearDisplay()
+	{
+		$this->lcd->clearDisplay();
+	}
+
+	public function outputText($text, $line = Lcd::LINE1)
 	{
 		$this->lcd->outputText($text, $line);
 	}

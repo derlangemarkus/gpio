@@ -2,7 +2,7 @@
 require_once '../lib/Lcd.class.php';
 require_once '../lib/Gpio.class.php';
 
-$lcd = new Lcd(7, 8, 25, 24, 23, 18);
+$lcd = new Lcd(7, 8, 25, 24, 23, 14);
 $lcd->init();
 $counter = 0;
 

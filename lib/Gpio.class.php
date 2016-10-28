@@ -10,6 +10,10 @@ class Gpio
 	
 	public static function setup($pin, $mode)
 	{
+		if(!self::isValidMode($mode))
+		{
+			throw new Exception("Invalid mode ".$mode);
+		}
 		file_put_contents("/sys/class/gpio/unexport", $pin);
 		file_put_contents("/sys/class/gpio/export", $pin);
 		file_put_contents("/sys/class/gpio/gpio".$pin."/direction", $mode);
@@ -31,5 +35,10 @@ class Gpio
 	public static function setPwm($pin, $value)
 	{
 		exec("gpio -g pwm ".$pin." ".intval($value));
+	}
+	
+	private static function isValidMode($mode)
+	{
+		return in_array($mode, array(self::MODE_IN, self::MODE_OUT, self::MODE_PWM));
 	}
 }
