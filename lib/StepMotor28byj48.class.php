@@ -41,22 +41,22 @@ class StepMotor28byj48
 
 	public function turnDegreesRight($degrees, $delay)
 	{
-		$this->turnStepsRight(4096/$degrees, $delay);
+		$this->turnStepsRight(round(4096/360*$degrees), $delay);
 	}
 	
 	public function turnStepsRight($steps, $delay)
 	{
-		$this->turn($this->sequences, $steps, $delay);
+		$this->turn(array_reverse($this->sequences), $steps, $delay);
 	}
 	
 	public function turnDegreesLeft($degrees, $delay)
 	{
-		$this->turnStepsLeft(4096/$degrees, $delay);
+		$this->turnStepsLeft(round(4096/360*$degrees), $delay);
 	}
 	
 	public function turnStepsLeft($steps, $delay)
 	{
-		$this->turn(array_reverse($this->sequences), $steps, $delay);
+		$this->turn($this->sequences, $steps, $delay);
 	}
 	
 	public function stop() 
