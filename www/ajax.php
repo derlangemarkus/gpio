@@ -5,27 +5,35 @@ require_once '../euli/Euli.class.php';
 
 if(!$argv)
 {
-	if($_GET["eyes"])
-	{
-		exec("sudo php /home/pi/projects/www/ajax.php ".$_GET["eyes"]);
-	}
+	echo("sudo php /home/pi/projects/www/ajax.php ".escapeshellarg(json_encode($_GET)));
+	exec("sudo php /home/pi/projects/www/ajax.php ".escapeshellarg(json_encode($_GET)));
 	exit;
 }
 
-$arguments = $argv[1];
+$arguments = json_decode($argv[1], true);
 $euli = Euli::getInstance(18, 7, 8, 25, 24, 23, 14);
-switch($arguments)
+switch($arguments["cmd"])
 {
-	case "open":
-		$euli->openEyes();
-		$euli->clearDisplay();
-		$euli->outputText("Hallo,", Lcd::LINE1);
-		$euli->outputText("ich bin EuLI.", Lcd::LINE2);
+	case "eyes":
+		if($arguments["direction"] == "open")
+		{
+			$euli->openEyes();
+			$euli->clearDisplay();
+			$euli->outputText("Hallo,", Lcd::LINE1);
+			$euli->outputText("ich bin EuLI.", Lcd::LINE2);
+		}
+		else
+		{
+			$euli->closeEyes();
+			$euli->clearDisplay();
+			$euli->outputText("Zzzzzzzzz");
+		}
 		break;
 	
-	case "close":
-		$euli->closeEyes();
-		$euli->clearDisplay();
-		$euli->outputText("Zzzzzzzzz");
+	case "text":
+		$euli->outputText($arguments["line1"], Lcd::LINE1);
+		$euli->outputText($arguments["line2"], Lcd::LINE2);
+		$euli->outputText($arguments["line3"], Lcd::LINE3);
+		$euli->outputText($arguments["line4"], Lcd::LINE4);
 		break;
 }

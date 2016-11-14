@@ -21,12 +21,21 @@
 	<body style="background-color: #FFE54D">
 		<div class="container">
 			<img src="img/euli_comic.png" class="img-responsive" style="margin:auto;"/>
-			<form class="form-signin">
-				<h2 class="form-signin-heading">EuLI</h>
+			<form class="form-signin" id="euli_form">
+				<h2 class="form-signin-heading">EuLI</h2>
 				<h6>Eigentlich unsinniges LCD Interface</h6>
 				<button type="button" class="btn btn-default btn-lg" style="width:95%" onclick="openEyes()"><img src="img/eyes_open.png" /> Augen auf</button><br />
 				<br />
-				<button type="button" class="btn btn-default btn-lg" style="width:95%" onclick="closeEyes()"><img src="img/eyes_closed.png" /> Augen zu</button>
+				<button type="button" class="btn btn-default btn-lg" style="width:95%" onclick="closeEyes()"><img src="img/eyes_closed.png" /> Augen zu</button><br />
+
+				<h4>Text</h4>
+				<div class="form-group">
+					<input type="text" name="line1" class="form-control" style="width:95%; max-width:300px" maxlength="20">
+					<input type="text" name="line2" class="form-control" style="width:95%; max-width:300px" maxlength="20">
+					<input type="text" name="line3" class="form-control" style="width:95%; max-width:300px" maxlength="20">
+					<input type="text" name="line4" class="form-control" style="width:95%; max-width:300px" maxlength="20">
+				</div>
+				<button type="button" class="btn btn-default btn-lg" style="width:95%; max-width:300px" onclick="showText()">anzeigen</button><br />
 			</form>
 		</div>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -34,13 +43,19 @@
 		<script type="text/javascript">
 			function openEyes()
 			{
-				jQuery.ajax("ajax.php?eyes=open");
+				jQuery.ajax("ajax.php?cmd=eyes&direction=open");
 			}
-			
+
 			function closeEyes()
 			{
-				jQuery.ajax("ajax.php?eyes=close");
+				jQuery.ajax("ajax.php?cmd=eyes&direction=close");
 			}
+			
+			function showText()
+			{
+				jQuery.ajax("ajax.php?cmd=text&"+$("#euli_form").serialize());
+			}
+			
 		</script>
 	</body>
 </html>

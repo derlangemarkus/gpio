@@ -23,7 +23,7 @@ class ShiftRegister
 	{
 		Gpio::setGpio($this->storePin, 0);
 		
-		foreach($values as $value)
+		foreach(array_reverse($values) as $value)
 		{
 			Gpio::setGpio($this->shiftPin, 0);
 			Gpio::setGpio($this->dataPin, $value);
@@ -31,5 +31,10 @@ class ShiftRegister
 		}
 		
 		Gpio::setGpio($this->storePin, 1);
+	}
+	
+	public function getUsedGpios()
+	{
+		return array($this->dataPin, $this->shiftPin, $this->storePin);
 	}
 }

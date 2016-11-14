@@ -18,12 +18,14 @@ class Lcd
 	
 	const LINE1 = 0x80;
 	const LINE2 = 0xC0;
+	const LINE3 = 0x94;
+	const LINE4 = 0xD4;
 	const SET_CGADR = 0x40;
 	
 	const E_PULSE = 50;  // Microseconds 
 	const E_DELAY = 300;  // Microseconds 
 	
-	public function __construct($pinRs, $pinE, $pinD4, $pinD5, $pinD6, $pinD7, $lcdWith = 16)
+	public function __construct($pinRs, $pinE, $pinD4, $pinD5, $pinD6, $pinD7, $lcdWith = 20)
 	{
 		$this->pinRs = $pinRs;
 		$this->pinE = $pinE;
@@ -55,10 +57,18 @@ class Lcd
 		usleep(self::E_DELAY);
 	}
 	
+	public function outputMultilineText($text)
+	{
+		$this->outputText(mb_substr($text, 0, $this->lcdWidth), Lcd::LINE1);
+		$this->outputText(trim(mb_substr($text, 1*$this->lcdWidth, $this->lcdWidth)), Lcd::LINE2);
+		$this->outputText(trim(mb_substr($text, 2*$this->lcdWidth, $this->lcdWidth)), Lcd::LINE3);
+		$this->outputText(trim(mb_substr($text, 3*$this->lcdWidth, $this->lcdWidth)), Lcd::LINE4);
+	}
+	
 	public function outputText($text, $line)
 	{
 		// Select line
-		if(!in_array($line, array(self::LINE1, self::LINE2)))
+		if(!in_array($line, array(self::LINE1, self::LINE2, self::LINE3, self::LINE4)))
 		{
 			throw new Exception("Invalid line ".$line.". Please use RAM address.");
 		}
@@ -91,60 +101,28 @@ class Lcd
 	
 	private function setByte($byte, $mode)
 	{
-		Gpio::setGpio($this->pinRs, $mode);
-
-		// High bits
-		Gpio::setGpio($this->pinD4, 0);
-		Gpio::setGpio($this->pinD5, 0);
-		Gpio::setGpio($this->pinD6, 0);
-		Gpio::setGpio($this->pinD7, 0);
-		if(($byte & 0x10) == 0x10)
-		{
-			Gpio::setGpio($this->pinD4, 1);
-		}
-		if(($byte & 0x20) == 0x20)
-		{
-			Gpio::setGpio($this->pinD5, 1);
-		}
-		if(($byte & 0x40) == 0x40)
-		{
-			Gpio::setGpio($this->pinD6, 1);
-		}
-		if(($byte & 0x80) == 0x80)
-		{
-			Gpio::setGpio($this->pinD7, 1);
-		}
-
-		// Toggle 'Enable' pin
-		$this->toggleEnable();
+		$pinD4 = ($byte & 0x10) == 0x10 ? 1 : 0;
+		$pinD5 = ($byte & 0x20) == 0x20 ? 1 : 0;
+		$pinD6 = ($byte & 0x40) == 0x40 ? 1 : 0;
+		$pinD7 = ($byte & 0x80) == 0x80 ? 1 : 0;
+		$this->sendData($pinD4, $pinD5, $pinD6, $pinD7, $mode);
 		
-		Gpio::setGpio($this->pinD4, 0);
-		Gpio::setGpio($this->pinD5, 0);
-		Gpio::setGpio($this->pinD6, 0);
-		Gpio::setGpio($this->pinD7, 0);
-		if(($byte & 0x01) == 0x01)
-		{
-			Gpio::setGpio($this->pinD4, 1);
-		}
-		if(($byte & 0x02) == 0x02)
-		{
-			Gpio::setGpio($this->pinD5, 1);
-		}
-		if(($byte & 0x04) == 0x04)
-		{
-			Gpio::setGpio($this->pinD6, 1);
-		}
-		if(($byte & 0x08) == 0x08)
-		{
-			Gpio::setGpio($this->pinD7, 1);
-		}
-
-		// Toggle 'Enable' pin
-		$this->toggleEnable();
+		$pinD4 = ($byte & 0x01) == 0x01 ? 1 : 0;
+		$pinD5 = ($byte & 0x02) == 0x02 ? 1 : 0;
+		$pinD6 = ($byte & 0x04) == 0x04 ? 1 : 0;
+		$pinD7 = ($byte & 0x08) == 0x08 ? 1 : 0;
+		$this->sendData($pinD4, $pinD5, $pinD6, $pinD7, $mode);
 	}
 	
-	private function toggleEnable()
+	protected function sendData($pinD4, $pinD5, $pinD6, $pinD7, $pinRs)
 	{
+		Gpio::setGpio($this->pinRs, $pinRs);
+		
+		Gpio::setGpio($this->pinD4, $pinD4);
+		Gpio::setGpio($this->pinD5, $pinD5);
+		Gpio::setGpio($this->pinD6, $pinD6);
+		Gpio::setGpio($this->pinD7, $pinD7);
+		
 		usleep(self::E_DELAY);
 		Gpio::setGpio($this->pinE, 1);
 		usleep(self::E_PULSE);
@@ -154,11 +132,11 @@ class Lcd
 	
 	private function getByteForChar($char)
 	{
-		$ownChars = array("\0", "\1", "\2", "\3", "\4", "\5", "\6", "\7");
-		if(isset($ownChars[$char]))
-		{
-			return array_search($char, $ownChars);
-		}
+//		$ownChars = array("\0", "\1", "\2", "\3", "\4", "\5", "\6", "\7");
+//		if(isset($ownChars[$char]))
+//		{
+//			return array_search($char, $ownChars);
+//		}
 		
 		$umlauts = array(
 			"ü" => "\365",

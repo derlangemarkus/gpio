@@ -1,9 +1,11 @@
 <?php
 require_once '../lib/Lcd.class.php';
+require_once '../lib/ShiftRegister.class.php';
+require_once '../lib/ShiftRegisterLcd.class.php';
 require_once '../lib/Gpio.class.php';
 
 $width = 20;
-$lcd = new Lcd(7, 8, 25, 24, 23, 14, $width);
+$lcd = new ShiftRegisterLcd(4, 2, 3, 6, 5, 4, 3, 2, 1, $width);
 $lcd->init();
 $counter = 0;
 

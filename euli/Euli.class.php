@@ -13,7 +13,7 @@ class Euli
 	private $lcd;
 	
 	
-	public static function getInstance($eyesPin, $pinRs, $pinE, $pinD4, $pinD5, $pinD6, $pinD7, $lcdWith = 16)
+	public static function getInstance($eyesPin, $pinRs, $pinE, $pinD4, $pinD5, $pinD6, $pinD7, $lcdWith = 20)
 	{
 		if(!self::$instance)
 		{
@@ -23,7 +23,7 @@ class Euli
 		return self::$instance;
 	}
 	
-	private function __construct($eyesPin, $pinRs, $pinE, $pinD4, $pinD5, $pinD6, $pinD7, $lcdWith = 16)
+	private function __construct($eyesPin, $pinRs, $pinE, $pinD4, $pinD5, $pinD6, $pinD7, $lcdWith = 20)
 	{
 		$this->eyesPin = $eyesPin;
 		Gpio::setupPwm($eyesPin);
